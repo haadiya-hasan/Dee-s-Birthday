@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> Happy Birthday Dee <3 </title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 80vh;
+      margin: 0;
+      background: #ffffff;
+      overflow: hidden;
+      transition: opacity 1s ease; /* smooth fade */
+    }
+
+    body.fade-out {
+      opacity: 0; /* when class is added, body fades out */
+    }
+
+    .cake img {
+      width: 600px;
+      cursor: pointer;
+      image-rendering: pixelated;
+      margin-bottom: -200px;
+    }
+
+    .birthday {
+      position: relative;
+      text-align: center;
+    }
+
+    .birthday img {
+      width: 200px;
+      image-rendering: pixelated;
+      animation: bounce 2s infinite ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    /* Confetti canvas */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+  <!-- Confetti canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Cake GIF (clickable) -->
+  <div class="cake">
+    <img id="cake" src="Spiderman-Cake-unscreen.gif" alt="Spider-Man Cake">
+  </div>
+
+  <!-- Birthday message -->
+  <div class="birthday">
+    <img src="happy-birthday-dee-removebg-preview.png" alt="Happy Birthday Dee">
+  </div>
+
+  <script>
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let confetti = [];
+
+    class ConfettiParticle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 12 + 8; // Bigger size
+        this.color = Math.random() > 0.5 ? 'red' : 'blue';
+        this.speedX = (Math.random() - 0.5) * 8;
+        this.speedY = Math.random() * -8 - 3;
+        this.gravity = 0.3;
+        this.shape = Math.random() > 0.5 ? "square" : "circle";
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.speedY += this.gravity;
+        this.size *= 0.97;
+      }
+
+      draw() {
+        ctx.fillStyle = this.color;
+        if (this.shape === "square") {
+          ctx.fillRect(this.x, this.y, this.size, this.size);
+        } else {
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, this.size / 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+
+    function createConfetti(x, y) {
+      for (let i = 0; i < 60; i++) { // more particles
+        confetti.push(new ConfettiParticle(x, y));
+      }
+    }
+
+    function animateConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      confetti.forEach((c, i) => {
+        c.update();
+        c.draw();
+        if (c.size < 0.5) confetti.splice(i, 1);
+      });
+      if (confetti.length > 0) {
+        requestAnimationFrame(animateConfetti);
+      }
+    }
+
+    document.getElementById("cake").addEventListener("click", (e) => {
+      e.preventDefault();
+
+      // Confetti burst
+      const rect = e.target.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      createConfetti(x, y);
+      animateConfetti();
+
+      // After a bit, fade out + redirect
+      setTimeout(() => {
+        document.body.classList.add("fade-out");
+        setTimeout(() => {
+          window.location.href = "Page 2.html";
+        }, 1000); // matches CSS fade duration
+      }, 1500);
+    });
+
+    // Responsive canvas
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>

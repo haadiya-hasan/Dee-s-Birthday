@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hope You Like it</title>
+<style>
+ body {
+    margin: 0;
+    height: 100vh;
+    background: url("background spiderman.jpeg") center;
+    position: static;
+    overflow: hidden;
+  }
+
+  /* === STARS === */
+  .star {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: white;
+    image-rendering: pixelated;
+    animation: twinkle 2s infinite alternate;
+  }
+  @keyframes twinkle {
+    0%,100% { opacity: 0.2; }
+    50%     { opacity: 1; }
+  }
+
+  /* === RAIN === */
+  .rain {
+    position: absolute;
+    width: 2px; height: 12px;
+    background: rgba(200,200,255,0.6);
+    top: -20px;
+    image-rendering: pixelated;
+    animation: fall linear infinite;
+  }
+  @keyframes fall {
+    from { transform: translateY(0); }
+    to   { transform: translateY(110vh); }
+  }
+
+  /* === Spider-Man Container (swinging) === */
+  .spiderman-container {
+    position: fixed;
+    top: 0;
+    right: 100px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: top center;
+    animation: swing 3s ease-in-out infinite alternate;
+    z-index: 1000;
+  }
+
+  /* Web Line */
+  .web-line {
+    width: 3px;
+    background: white;
+  }
+
+  /* Spider-Man Image */
+  .corner-img {
+    width: 200px;
+  }
+
+  /* Swing Animation */
+  @keyframes swing {
+    0%   { transform: rotate(-10deg); }
+    50%  { transform: rotate(10deg); }
+    100% { transform: rotate(-10deg); }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Spider-Man with web -->
+  <a href="page 3.html">
+  <div class="spiderman-container">
+    <div class="web-line"></div>
+    <img src="spiderman2-removebg-preview.png" alt="Spider-Man" class="corner-img">
+  </div>
+</a>
+
+<script>
+  /* Stars */
+  const starCount = 40;
+  for (let i = 0; i < starCount; i++) {
+    let star = document.createElement("div");
+    star.className = "star";
+    star.style.left = Math.floor(Math.random() * window.innerWidth) + "px";
+    star.style.top  = Math.floor(Math.random() * (window.innerHeight * 0.4)) + "px";
+    star.style.animationDuration = (1.5 + Math.random()*2) + "s";
+    star.style.animationDelay = (Math.random() * 2) + "s";
+    document.body.appendChild(star);
+  }
+
+  /* Rain */
+  const rainCount = 120;
+  for (let i = 0; i < rainCount; i++) {
+    let drop = document.createElement("div");
+    drop.className = "rain";
+    drop.style.left = Math.random() * 100 + "vw";
+    drop.style.animationDuration = (0.5 + Math.random()*0.7) + "s";
+    drop.style.animationDelay = (Math.random()*2) + "s";
+    document.body.appendChild(drop);
+  }
+
+  /* === Dynamic Web Line Height === */
+  function adjustWebLine() {
+    const spiderman = document.querySelector('.corner-img');
+    const webLine = document.querySelector('.web-line');
+
+    if (spiderman && webLine) {
+      const spidermanTop = spiderman.getBoundingClientRect().top;
+      const spidermanHeight = spiderman.offsetHeight;
+      webLine.style.height = spidermanTop + "px";
+    }
+  }
+
+  // Run on load and when window resizes
+  window.addEventListener("load", adjustWebLine);
+  window.addEventListener("resize", adjustWebLine);
+</script>
+
+</body>
+</html>

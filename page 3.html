@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Folded Paper – Click to Reveal</title>
+<style>
+  :root{
+    --paper-w: min(90vw, 420px);
+    --closed-h: 170px;
+    --open-h: 480px;
+    --fold: 56px;
+    --paper: #fffdf7;
+    --edge: #e9e5da;
+    --shadow: rgba(0,0,0,.15);
+    --ink: #2b2b2b;
+    --accent: #6a78ff;
+  }
+
+  * { box-sizing: border-box; }
+  body{
+    display:grid;
+    place-content:center;
+    min-height:100svh;
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    background: url("https://europe1.discourse-cdn.com/unity/original/4X/e/5/a/e5a1493e4e1bb1be7bbae70320a27a2b582938ab.gif") center/cover no-repeat fixed;
+    color: white; /* ✅ Make all text white globally */
+  }
+
+    /* === Spider-Man Container (swinging) === */
+  .spiderman-container {
+    position: fixed;
+    top: 0;
+    right: 100px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: top center;
+    animation: swing 3s ease-in-out infinite alternate;
+    z-index: 1000;
+  }
+
+  /* Web Line */
+  .web-line {
+    width: 3px;
+    background: white;
+  }
+
+  /* Spider-Man Image */
+  .corner-img {
+    width: 200px;
+  }
+
+  /* Swing Animation */
+  @keyframes swing {
+    0%   { transform: rotate(-10deg); }
+    50%  { transform: rotate(10deg); }
+    100% { transform: rotate(-10deg); }
+  }
+
+  /* Hide the checkbox but keep it accessible */
+  #reveal {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    clip-path: inset(50%);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .paper{
+    width: var(--paper-w);
+    height: var(--closed-h);
+    position: relative;
+    border-radius: 14px;
+    background:
+      radial-gradient(60% 90% at 50% 10%, #822720 0 50%, #021656 80% 100%),
+      var(--paper);
+    box-shadow:
+      0 18px 28px -8px var(--shadow),
+      0 2px 0 0 var(--edge) inset;
+    border: 1px solid #eae6d9;
+    padding: 20px 22px 22px;
+    cursor: pointer;
+    transition:
+      height .55s cubic-bezier(.25,.9,.3,1),
+      clip-path .55s cubic-bezier(.25,.9,.3,1),
+      box-shadow .35s ease;
+    /* Create the folded corner (cutout) when closed */
+    clip-path: polygon(0 0, calc(100% - var(--fold)) 0, 100% var(--fold), 100% 100%, 0 100%);
+    will-change: height, clip-path;
+
+    color: white; /* ✅ Ensure all text inside is white */
+  }
+
+  /* Little “fold” triangle */
+  .paper::after{
+    content:"";
+    position:absolute;
+    top:0; right:0;
+    width: var(--fold);
+    height: var(--fold);
+    background:
+      linear-gradient(135deg, #3a3a3a 0 49.8%, transparent 50%), /* ✅ Darker fold */
+      linear-gradient(225deg, rgba(0,0,0,.25), rgba(0,0,0,0));
+    border-top-right-radius: 12px;
+    box-shadow:
+      -1px 1px 0 0 #222 inset,
+      -8px 8px 12px -6px rgba(0,0,0,.4);
+    transition: opacity .45s ease, transform .45s ease;
+    pointer-events: none;
+  }
+
+  /* A subtle dotted guide */
+  .paper::before{
+    content:"";
+    position:absolute;
+    inset: 0 0 auto 0;
+    height: 22px;
+    background:
+      repeating-linear-gradient(
+        to right,
+        rgba(255,255,255,0.4) 0 2px,  /* ✅ White dotted line */
+        transparent 2px 10px
+      );
+    opacity:.5;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+    pointer-events:none;
+  }
+
+  .title{
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin: 8px 0 10px;
+    color: white; /* ✅ white title */
+  }
+
+  .hint{
+    position:absolute;
+    right: 14px;
+    bottom: 10px;
+    font-size: .82rem;
+    opacity:.8;
+    user-select:none;
+    color: white; /* ✅ white hint */
+  }
+
+  .paper__content{
+    margin-top: 6px;
+    line-height: 1.55;
+    font-size: .98rem;
+    max-width: 60ch;
+    max-height: calc(var(--open-h) - 80px); /* ✅ limit height */
+    overflow-y: auto;  /* ✅ allow vertical scrolling */
+    padding-right: 8px; /* ✅ space for scrollbar */
+    mask: linear-gradient(#fffff 70%, rgba(0,0,0,0) 100%);
+    transition: opacity .35s ease, transform .35s ease, mask .55s ease;
+    color: white; /* ✅ white content */
+  }
+
+  .tags{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .tag{
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px dashed rgba(255,255,255,0.7); /* ✅ White dashed border */
+    font-size: .8rem;
+    opacity:.95;
+    color: white; /* ✅ white tag text */
+  }
+
+  /* Hover niceness */
+  .paper:hover{
+    box-shadow:
+      0 22px 36px -10px rgba(0,0,0,.25),
+      0 2px 0 0 var(--edge) inset;
+  }
+
+  /* OPEN STATE (when checkbox is checked) */
+  #reveal:checked + label.paper{
+    height: var(--open-h);
+    clip-path: inset(0 round 14px);
+  }
+  #reveal:checked + label.paper::after{
+    opacity: 0;
+    transform: translate(8px, -8px) rotate(8deg) scale(.98);
+  }
+  #reveal:checked + label.paper .paper__content{
+    mask: none;
+  }
+
+  /* Make it tappable on mobile */
+  .tap{
+    display: inline-flex;
+    gap: .5ch;
+    align-items: center;
+    font-size: .85rem;
+    opacity:.85;
+    margin-left: 6px;
+    color: white; /* ✅ white tap text */
+  }
+  .tap .dot{
+    inline-size:.5em; block-size:.5em; border-radius:50%;
+    background: white; /* ✅ white dot */
+    opacity:.8;
+  }
+
+  /* Accessibility focus outline */
+  label.paper:focus-visible{
+    outline: 3px solid var(--accent);
+    outline-offset: 4px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- The checkbox controls the open/closed state -->
+  <input type="checkbox" id="reveal" />
+
+  <!-- Clicking the “paper” toggles the checkbox -->
+  <label for="reveal" class="paper" aria-live="polite" aria-controls="note">
+    <div class="title">
+      Happy Birthday Babe
+      <span class="tap"><span class="dot"></span> tap / click to open</span>
+    </div>
+
+    <div id="note" class="paper__content">
+      
+
+
+      <p style="margin-top:14px; color:white;">
+       Well this took a while to be made, html and css isn’t the easiest for sure but I’m glad however and whatever it turned out to be. About a month’s efforts considering all the images and background were also CUSTOM MADE for YOU :3
+
+Anyways,   
+        <code style="color:white;">HAPPY BIRTHDAY!!</code>
+        <p style="margin-top:14px;">I don’t know if we’ll still be together by the time you’re reading this, but I hope we are, bcs the thought of losing you gives me shivers and gives me nightmares and horrors.</code>
+       You’re finally 19, and honestly all these months I’ve been so goddamn proud of you, you’re growing everyday into this weird and odd person (in a good way) and I can’t express how happy I am to see you grow infront of my eyes. </p>
+       <p style="margintop:1px;"> Dee, I love you so much and I hope we’ll stick around with each other for the rest of all your birthdays, I know you don’t like the idea of birthdays but I do, so here’s your small tiny little gift and I hope you liked it^^
+      </p>
+    </div>
+
+    <p style="margin-top:14px;"><div class="hint">If you'd like to close the note, click on it again :3 </div></p>
+  </label>
+
+
+
+  <!-- Spider-Man with web -->
+  <a href="Happy Birthday Dee.html">
+  <div class="spiderman-container">
+    <div class="web-line"></div>
+    <img src="spiderman2-removebg-preview.png" alt="Spider-Man" class="corner-img">
+  </div>
+</a>
+
+
+</body>
+</html>
