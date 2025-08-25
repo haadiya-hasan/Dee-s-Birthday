@@ -4,13 +4,15 @@
 <meta charset="utf-8">
 <title>Hope You Like it</title>
 <style>
- body {
-    margin: 0;
-    height: 100vh;
-    background: url("background spiderman.jpeg") center;
-    position: static;
-    overflow: hidden;
-  }
+body {
+  margin: 0;
+  height: 100vh;
+  background: url("background spiderman.jpeg") center center / contain no-repeat,
+              url("background spiderman.jpeg") center center / cover no-repeat;
+  background-blend-mode: normal;
+  position: relative;
+  overflow: hidden;
+}
 
   /* === STARS === */
   .star {
